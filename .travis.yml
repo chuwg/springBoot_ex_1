@@ -35,7 +35,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_SECRET_KEY
     bucket: chuwg-springboot-build
-    key: chuwg-springboot2-webservice.zip
+    key: chuwg-springboot-webservice.zip
     bundle_type: zip
     application: chuwg-springboot-webservice
     deployment_group: chuwg-springboot-webservice-group
