@@ -16,7 +16,7 @@ cache:
 script: "./gradlew clean build"
 
 before_deploy:
-  - zip -r springBooot_ex_1
+  - zip -r springBooot_ex_1 *
   - mkdir -p deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성.
 #  - cp scripts/*.sh before-deploy/
 #  - cp appspec.yml before-deploy/
