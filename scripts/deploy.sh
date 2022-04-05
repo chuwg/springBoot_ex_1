@@ -7,7 +7,7 @@ echo "> Bulid 파일 복사"
 
 cp $REPOSITORY/zip/*.jar $REPOSITORY/
 
-echo "> 현재 구동 중인 애플리케이션 pid 확인1"
+echo "> 현재 구동 중인 애플리케이션 pid 확인11"
 
 CURRENT_PID=$(pgrep -fl chuwg-springboot-webservice | grep jar | awk '{print $1')
 
