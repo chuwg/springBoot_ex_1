@@ -7,10 +7,8 @@ echo "> Bulid 파일 복사"
 
 cp $REPOSITORY/zip/*.jar $REPOSITORY/
 
-echo "> 현재 구동 중인 애플리케이션 pid 확인11"
-
-CURRENT_PID=$(pgrep -fl chuwg-springboot-webservice | grep jar | awk '{print $1}')
-
+echo "> 현재 구동중인 애플리케이션 pid 확인"
+CURRENT_PID=$(pgrep -f ${PROJECT_NAME}.*.jar)
 echo "현재 구동 중인 애플리케이션 pid : $CURRENT_PID"
 
 # shellcheck disable=SC2157
@@ -35,7 +33,7 @@ chmod +x $JAR_NAME
 echo "> 내가 만든 프로젝트 실행(jar)"
 
 nohup java -jar \
-  -Dspring.config.location=classpath:/application.properties,classpath:/application-real.properties,
+  -Dspring.config.location=classpath:/application.properties,classpath:/application-real.properties, \
   /home/ec2-user/app/application-oauth.properties,/home/ec2-user/app/application-real-db.properties \
   -Dspring.profiles.active=real \
   $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
