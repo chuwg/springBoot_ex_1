@@ -26,7 +26,7 @@ before_deploy:
   - cd ../ && mkdir -p deploy # 상위 디렉토리로 이동 후 deploy 디렉토리 생성
   #- mv springBoot_ex_1.zip deploy/springBoot_ex_1.zip #deploy로 zip 파일 이동
   - mv before-deploy/before-deploy.zip deploy/springBoot_ex_1.zip
-
+# 테스트용 빌드
 deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY
