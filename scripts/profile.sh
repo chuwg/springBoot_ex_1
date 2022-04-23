@@ -1,39 +1,38 @@
 #!/usr/bin/env bash
 
-ABSPATH=$(readlink -f $0)
-ABSDIR=$(dirname $ABSPATH)
-source ${ABSDIR}/profile.sh
-source ${ABSDIR}/switch.sh
+# bash는 return value가 안되니 *제일 마지막줄에 echo로 해서 결과 출력*후, 클라이언트에서 값을 사용한다
 
-IDLE_PORT=$(find_idle_port)
+# 쉬고 있는 profile 찾기: real1이 사용중이면 real2가 쉬고 있고, 반대면 real1이 쉬고 있음
+function find_idle_profile()
+{
+    RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/profile)
 
-echo "> Health Check Start!"
-echo "> IDLE_PORT: $IDLE_PORT"
-echo "> curl -s http://localhost:$IDLE_PORT/profile "
-sleep 10
+    if [ ${RESPONSE_CODE} -ge 400 ] # 400 보다 크면 (즉, 40x/50x 에러 모두 포함)
+    then
+        CURRENT_PROFILE=real2
+    else
+        CURRENT_PROFILE=$(curl -s http://localhost/profile)
+    fi
 
-for RETRY_COUNT in {1..10}
-do
-  RESPONSE=$(curl -s http://localhost:${IDLE_PORT}/profile)
-  UP_COUNT=$(echo ${RESPONSE} | grep 'real' | wc -l)
+    if [ ${CURRENT_PROFILE} == real1 ]
+    then
+      IDLE_PROFILE=real2
+    else
+      IDLE_PROFILE=real1
+    fi
 
-  if [ ${UP_COUNT} -ge 1 ]
-  then # $up_count >= 1 ("real" 문자열이 있는지 검증)
-      echo "> Health check 성공"
-      switch_proxy
-      break
-  else
-      echo "> Health check의 응답을 알 수 없거나 혹은 실행 상태가 아닙니다."
-      echo "> Health check: ${RESPONSE}"
-  fi
+    echo "${IDLE_PROFILE}"
+}
 
-  if [ ${RETRY_COUNT} -eq 10 ]
-  then
-    echo "> Health check 실패. "
-    echo "> 엔진엑스에 연결하지 않고 배포를 종료합니다."
-    exit 1
-  fi
+# 쉬고 있는 profile의 port 찾기
+function find_idle_port()
+{
+    IDLE_PROFILE=$(find_idle_profile)
 
-  echo "> Health check 연결 실패. 재시도..."
-  sleep 10
-done
+    if [ ${IDLE_PROFILE} == real1 ]
+    then
+      echo "8081"
+    else
+      echo "8082"
+    fi
+}
